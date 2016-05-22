@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PartnerConfig name="" id="">
+  <FeedConfig>
+    <Feed href="default" format="xml" encoding="utf-8">
+      <Extend from="base.xml" href="default" />
+      <PluginConfiguration>
+        <DllPath>vc://cosmos05/Appex.prod/local/AppEx/Ingestion/plugins/dev/ProcessingComponents.dll</DllPath>
+        <DllPath>vc://cosmos05/Appex.prod/local/AppEx/Ingestion/plugins/dev/ProcessorDefaultLibrary.dll</DllPath>
+      </PluginConfiguration>
+      <DateTimeFormat></DateTimeFormat>
+      <TimeZone></TimeZone>
+      <ContentConfig type="article">
+        <DefaultDateTimeFormat>yyyyMMdd'T'HHmmss</DefaultDateTimeFormat>
+        <TimeZone></TimeZone>
+        <Root>
+          <xpath>NewsItem</xpath>
+        </Root>
+        <UniqueContentId type="string">
+          <DefaultPrefix>ESAR.LaTercera</DefaultPrefix>
+          <xpath>NewsComponent/@Duid</xpath>
+        </UniqueContentId>
+        <Title>
+          <xpath>NewsComponent/NewsComponent/NewsComponent/NewsLines/HeadLine</xpath>
+        </Title>
+        <Abstract>
+          <xpath>NewsComponent/NewsComponent/NewsComponent/NewsLines/SlugLine</xpath>
+        </Abstract>
+        <SubTitle>
+          <xpath>NewsComponent/NewsComponent/NewsComponent/NewsLines/HeadLine</xpath>
+        </SubTitle>
+        <Author>
+          <xpath>NewsComponent/NewsComponent/Author</xpath>
+        </Author>
+        <Published>
+          <xpath>NewsManagement/FirstCreated</xpath>
+        </Published>
+        <Updated>
+          <xpath>NewsManagement/ThisRevisionCreated</xpath>
+        </Updated>
+        <Body>
+          <!--relative to root-->
+          <xpath>NewsComponent/NewsComponent/NewsComponent/ContentItem/DataContent/nitf/body/body.content</xpath>
+          <processors>
+            <!-- get all p tags -->
+            <processor class='XmlGetXpathNodesList'>
+              <param name="xpath" value='p'/>
+            </processor>
+            <!-- convert list of p nodes to list of strings -->
+            <processor class='NodeListToStringList'>
+              <processors>
+                <!-- get outer xml of each tag -->
+                <processor class='XmlGetOuterXml'/>
+                <!-- remove \t, \r, \n from string -->
+                <processor class='RegexReplaceProcessor'>
+                  <param name="regex" value='\t|\r|\n|&lt;a [^\&gt;]+\s*&gt;|&lt;/a\s*&gt;'/>
+                  <param name="replacement" value=''/>
+                </processor>
+              </processors>
+            </processor>
+            <!-- join strings -->
+            <processor class='JoinStringList'/>
+            <!-- wrap result in xhtml tags -->
+            <processor class='StringFormatProcessor'>
+              <param name="format" value='&lt;xhtml xmlns="http://www.w3.org/1999/xhtml"&gt;{0}&lt;/xhtml&gt;'/>
+            </processor>
+          </processors>
+        </Body>
+        <CustomTags>
+          <CustomTag xpath='NewsComponent/NewsComponent/NewsComponent/item_keywords/item_keyword' name='seo_keywords' />
+          <CustomTag name="AppMask" value="-1" />
+          <CustomTag name="CategoryMask" value="-1" />
+        </CustomTags>
+        <Images>
+          <!-- Xpath to container node of images. Much like Root node, will split at this level -->
+          <xpath>NewsComponent/NewsComponent/NewsComponent/ContentItem/DataContent/nitf/body/body.content</xpath>
+          <processors>
+            <!-- Splits feed images into node list of XmlNodes (images) based on relative path from <Images>\Xpath value -->
+            <processor class='XmlGetXpathNodesList'>
+              <param name="xpath" value="media"/>
+            </processor>
+            <!-- Takes the split feed image node list element and constructs ImageGroup using xpaths in var name='imagepaths' -->
+            <processor class='GetImageGroupFromXpathList'>
+              <param name="previewXpath" ref='imagepaths'/>
+              <param name="originalXpath" ref='imagepaths'/>
+            </processor>
+            <!-- variables to be used in the GetImageGroupFromXpathList processor -->
+            <vars>
+              <var name='imagepaths' type='Dictionary'>
+                <item key='url' value="media-reference/@source"/>
+                <item key='width' value=''/>
+                <item key='height' value=''/>
+                <item key='attribution' value="media-reference/@copyright"/>
+                <item key='copyright' value="media-reference/@copyright"/>
+                <item key='alttext' value="media-reference/@alternate-text"/>
+                <item key='imgtext' value="media-reference/@alternate-text"/>
+              </var>
+            </vars>
+          </processors>
+        </Images>
+      </ContentConfig>
+    </Feed>
+
+  </FeedConfig>
+  
+  <BedrockConfig>
+    <ArticleFeeds>
+      <ArticleFeed href="default">
+        <FolderPath>NotCategorized/IEXLondonTest</FolderPath>
+        <UpdateDocument>True</UpdateDocument>
+        <TemplatePath>csl/Templates/SlotInput/CommonArticle.xsn</TemplatePath>
+        <BedrockWS>http://bedrockemea:202/Editorial/WebServices</BedrockWS>
+        <HeadLineWS>http://bedrockemea:202/Editorial/WcfServices/HeadlineManagement.svc?token=3/NB/lYrvRb0NGDEdsBMRQ==</HeadLineWS>
+        <EnableNewsDeskIntegration>true</EnableNewsDeskIntegration>
+        <ArchiveDays>2</ArchiveDays>
+        <ExpiryDays>180</ExpiryDays>
+        <ExpireOnUpdateDate>false</ExpireOnUpdateDate>
+        <WebPageID>33520144</WebPageID>
+        <Market>NotCategorized</Market>
+        <FeedName>NotCategorized</FeedName>
+        <ExternalFeedId>NotCategorized</ExternalFeedId>
+        <ParentFolderId>265439458</ParentFolderId>
+        <SiteId>32125811</SiteId>
+        <ImageIngestor>RandomImageIngestor</ImageIngestor>
+        <ImagesPerArticle>1</ImagesPerArticle>
+        <CustomTags>
+          <CustomTag Key="displayAds" Value="1" />
+          <CustomTag Key="ignoreSectionBreaks" Value="true" />
+        </CustomTags>
+        <Debug>true</Debug>
+        <IgnoreImageAspectRatio>true</IgnoreImageAspectRatio>
+      </ArticleFeed>
+
+    </ArticleFeeds>
+  </BedrockConfig>
+</PartnerConfig>

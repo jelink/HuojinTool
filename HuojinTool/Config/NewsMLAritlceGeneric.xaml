@@ -1,0 +1,48 @@
+﻿<Activity mc:Ignorable="sap sads" x:Class="Microsoft.AppEx.Ingestion.Workflows.Sangam_Partners.AppEx.ArticlePackage.{0}"
+ xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+ xmlns:local="clr-namespace:Microsoft.AppEx.Ingestion.Workflows.Sangam_Partners.AppEx.Common"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:mv="clr-namespace:Microsoft.VisualBasic;assembly=System"
+ xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+ xmlns:s="clr-namespace:System;assembly=mscorlib"
+ xmlns:s1="clr-namespace:System;assembly=System"
+ xmlns:s2="clr-namespace:System;assembly=System.Xml"
+ xmlns:s3="clr-namespace:System;assembly=System.Core"
+ xmlns:s4="clr-namespace:System;assembly=System.ServiceModel"
+ xmlns:sa="clr-namespace:System.Activities;assembly=System.Activities"
+ xmlns:sad="clr-namespace:System.Activities.Debugger;assembly=System.Activities"
+ xmlns:sads="http://schemas.microsoft.com/netfx/2010/xaml/activities/debugger"
+ xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+ xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System"
+ xmlns:scg1="clr-namespace:System.Collections.Generic;assembly=System.ServiceModel"
+ xmlns:scg2="clr-namespace:System.Collections.Generic;assembly=System.Core"
+ xmlns:scg3="clr-namespace:System.Collections.Generic;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
+ xmlns:sl="clr-namespace:System.Linq;assembly=System.Core"
+ xmlns:st="clr-namespace:System.Text;assembly=mscorlib"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:Members>
+    <x:Property Name="ArgFeedUrlList" Type="InArgument(x:String)" />
+    <x:Property Name="ARG_FEED_CONFIG_FILE_PATH" Type="InArgument(x:String)" />
+    <x:Property Name="ARG_CACHE_ENVIRONMENT" Type="InArgument(x:String)" />
+    <x:Property Name="ARG_ARTICLE_PROCESSOR" Type="InArgument(x:String)" />
+  </x:Members>
+  <sap:VirtualizedContainerService.HintSize>262,248</sap:VirtualizedContainerService.HintSize>
+  <mva:VisualBasic.Settings>Assembly references and imported namespaces for internal implementation</mva:VisualBasic.Settings>
+  <Sequence sad:XamlDebuggerXmlReader.FileName="D:\AppEx\Ingestion\Dev\src\Apps\News\NewsWorkflows\Sangam_Partners\AppEx\ArticlePackage\{0}.xaml" sap:VirtualizedContainerService.HintSize="222,208">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="x:String" Default="ArticleDownload.tsv" Name="VarArticleDownload" />
+      <Variable x:TypeArguments="x:String" Default="vc://cosmos05/AppEx.prod" Name="VCName" />
+      <Variable x:TypeArguments="x:String" Default="SerializedArticles.tsv" Name="VarSerializedArticles" />
+      <Variable x:TypeArguments="x:String" Default="SerializedEntities.tsv" Name="VarSerializedEntities" />
+      <Variable x:TypeArguments="s:DateTime" Default="[DateTime.Today]" Name="VarCurrentDate" />
+    </Sequence.Variables>
+    <sap:WorkflowViewStateService.ViewState>
+      <scg3:Dictionary x:TypeArguments="x:String, x:Object">
+        <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+      </scg3:Dictionary>
+    </sap:WorkflowViewStateService.ViewState>
+    <local:ApiPullMonitorActivity DownloadedCount="{x:Null}" ErrorCount="{x:Null}" MaxErrors="{x:Null}" Password="{x:Null}" ProcessedCount="{x:Null}" UserName="{x:Null}" AlertEmailRecepients="angupt@microsoft.com" AlertEmailSubject="Goal.com feed Ingestion" sap:VirtualizedContainerService.HintSize="200,22" OutputDataStream="[VarArticleDownload]" UrlListStream="[ArgFeedUrlList]" VirtualCluster="[VCName]" />
+    <local:ProcessandParallelPublishToBedrock ARG_FEED_STREAM_READER_ARGS="{x:Null}" ARG_INPUT_STREAMS="{x:Null}" ARG_INPUT_STREAM_TYPES="{x:Null}" ARG_CACHE_ENVIRONMENT="[ARG_CACHE_ENVIRONMENT]" ARG_CONTENT_TYPE="Article" ARG_DOCUMENT_STREAM="[VarArticleDownload]" ARG_FEED_CONFIG_FILE="[ARG_FEED_CONFIG_FILE_PATH]" ARG_FEED_STREAM_READER="ApiPullOuptutBinaryStreamReader" ARG_PROCESSOR_ARGS="[{}]" ARG_PROCESSOR_NAME="[ARG_ARTICLE_PROCESSOR]" ARG_VCNAME="[VCName]" sap:VirtualizedContainerService.HintSize="200,22" />
+  </Sequence>
+</Activity>
